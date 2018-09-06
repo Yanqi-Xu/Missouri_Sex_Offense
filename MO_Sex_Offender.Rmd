@@ -35,8 +35,9 @@ library(viridis)
 ```
 
 ```{r set up environment}
-options(device = "X11") 
-X11.options(type = "cairo")
+#If on a Mac, uncomment the following two lines when knitting.
+# options(device = "X11") 
+# X11.options(type = "cairo")
 ```
 
 ## Read the data table
@@ -72,6 +73,7 @@ geom_segment(aes(x=0,xend=15,y=Off.Age,yend=Victim.Age),
 MO_offense_minor <- MO_offense %>% filter(Victim.Age < 18)
 p + geom_segment(data=MO_offense_minor,  aes(x=0,xend=15,y=Off.Age,yend=Victim.Age),size=.02, color="#FC4E07") 
 ```
+![](images/slope_graph_02.png)
 It shows that offenses against minors constitue about 10% of total offenses, while the offenders' ages vary. 
 
 ## Tracking number of sexual offenses
@@ -92,6 +94,7 @@ ggplot(MO_offense_time, aes(x=Year, y=number)) +
   scale_x_continuous(breaks = seq(1955, 2020, 5)) +
   theme_linedraw()
 ```
+![](images/line_graph.png)
 Notably, it seems that around 2006-2007, the offenses commited each year started to drop at a remarkable rate. Fore more recent cases, it's understandable that some offenders may have not been convicted, hence the smaller number. Arguably this time period also coincided with the aforementioned SORNA's heightened efforts to expand the registry, "strengthening federal penalties for crimes against children and forms new regional Internet Crimes Against Children Taskforces".
 
 # Mapping the Offenders
@@ -107,7 +110,7 @@ MO_offender_unique <- MO_offender %>%
   filter(!is.na(County))
 ```
 
-##Loading the shapefiles and census data
+## Loading the shapefiles and census data
 Using `library(tidycensus)`, we can obtain the county shapefile of the Missouri state and the census data of each county. 
 `B0001_001E` is the Census variable name for total estimated population.
 ```{r key, eval=F}
@@ -121,7 +124,7 @@ census_api_key(census_key)
 ```{r, message=F, quietly=T, echo=T, results='hide'}
 MO <- get_acs(geography="county", year=2016, variables = "B00001_001E",state="MO", geometry=T)
 ```
-##Joining Data
+## Joining Data
 Currently there's not a common field in the two dataset to be joined by. I decided to create a new column in the `MO_offender_county` dataset. 
 ```{r}
 MO_offender_county <- MO_offender_unique %>% 
@@ -136,11 +139,11 @@ MO <- left_join(MO, MO_offender_county,
                           by=c("NAME"="county_name"))
 ```
 
-##Calculating percent of Offenders against Population
+## Calculating percent of Offenders against Population
 ```{r}
 MO <- MO %>% mutate(offender_percent = round((off_per_county/estimate) *100, 2 ))
 ```
-##Mapping the percentage of sexual offenders by county
+## Mapping the percentage of sexual offenders by county
 ```{r}
 ggplot() +
   geom_sf(data=MO, aes(fill = offender_percent), color=NA) +
@@ -152,6 +155,7 @@ ggplot() +
   theme_void() +
   theme(panel.grid.major = element_line(colour = 'transparent'))
 ```
+![](images/MO_map.png)
 Voilà! However, there's still blank spaces for some states. For data of this granulality, it seems an interactive map could do much more with the tooltips showing the county names, population and key data. 
 
 This project is part of the mass online class "R for Journalists" taught by the wonderful Washington Post Investigative and Data reporter Andrew Tran.
