@@ -19,9 +19,9 @@ When I looked up sex offender statistics, I found that women are faced with thre
 
 Missouri maintains a database as part of its Sex Offender Registration program, required by the Wetterling Crimes Against Children and Sexually Violent Offender Registration Act since 1995.
 
-[Missouri State Highway Patrol's website](http://www.mshp.dps.missouri.gov/MSHPWeb/PatrolDivisions/CRID/SOR/SORPage.html) publishes the database along with photos of the offenders to facilitate the public knowledge. Notably, only those who were convicted or offered a plea were registered.
+[Missouri State Highway Patrol's website](http://www.mshp.dps.missouri.gov/MSHPWeb/PatrolDivisions/CRID/SOR/SORPage.html) publishes the database along with photos of the offenders to facilitate the public knowledge of the offenders. Notably, only those who were convicted or offered a plea were registered.
 
-In accordance with Title I of the Adam Walsh Child Protection and Safety Act of 2006, entitled the Sex Offender Registration and Notification Act (SORNA), all 50 states have such a databse to keep track of sex offenders. The [FBI Sex Offender Registry Website](https://www.fbi.gov/scams-and-safety/sex-offender-registry) is a gateway to sex offender registries in all 50 states
+In compliance with Title I of the Adam Walsh Child Protection and Safety Act of 2006, entitled the Sex Offender Registration and Notification Act (SORNA), all 50 states have such a database to keep track of sex offenders. The [FBI Sex Offender Registry Website](https://www.fbi.gov/scams-and-safety/sex-offender-registry) is a gateway to sex offender registries in all 50 states.
 
 ## Loading Data Packages
 ```{r loading packages, message=F}
@@ -41,7 +41,7 @@ library(viridis)
 ```
 
 ## Read the data table
-The downloadable datasets from the Registry include multiple items. According to the [fact sheet](http://www.mshp.dps.missouri.gov/MSHPWeb/PatrolDivisions/CRID/SOR/factsheet.html),  including name, alias names, date of birth, alias dates of birth, physical description, all addresses, offense, vehicle information, picture of registered sex offenders and offense dates available on the website. We used the two datasets *`msor.xlsx`*, which is a databse of offenders, as well as *`msir_offense`*, which includes more details about individual sex offense cases.
+The downloadable datasets from the Registry include multiple items. According to the [fact sheet](http://www.mshp.dps.missouri.gov/MSHPWeb/PatrolDivisions/CRID/SOR/factsheet.html),name, alias names, date of birth, alias dates of birth, physical description, all addresses, offense, vehicle information, pictures of registered sex offenders and offense dates were available on the website. We used the two datasets *`msor.xlsx`*, which is a database of offenders, as well as *`msir_offense`*, which includes more details about individual sex offense cases.
 
 ```{r pressure, echo=T}
 MO_offense <- read_xlsx("msor/msor_offense.xlsx", skip = 13) 
@@ -51,7 +51,7 @@ MO_offense$Off.Age <- as.numeric(MO_offense$Off.Age)
 MO_offense$Victim.Age <- as.numeric(MO_offense$Victim.Age)
 ```
 
-#Plotting Offender age and Victim Age
+#Plotting Offender Age and Victim Age
 ```{r}
 #Drawing the plot with the geom_line function in ggplot2
 p <- ggplot(MO_offense) + 
@@ -73,10 +73,10 @@ geom_segment(aes(x=0,xend=15,y=Off.Age,yend=Victim.Age),
 MO_offense_minor <- MO_offense %>% filter(Victim.Age < 18)
 p + geom_segment(data=MO_offense_minor,  aes(x=0,xend=15,y=Off.Age,yend=Victim.Age),size=.02, color="#FC4E07") 
 ```
-![](images/slope_graph_02.png)
-It shows that offenses against minors constitue about 10% of total offenses, while the offenders' ages vary. 
 
-## Tracking number of sexual offenses
+It shows that offenses against minors constitute about 10% of total offenses, while the offenders' ages vary. 
+
+## Tracking the number of sexual offenses
 the `str_sub()` function can help extract the year from the Offense.Date.
 ```{r}
 MO_offense <- MO_offense %>%  
@@ -94,14 +94,15 @@ ggplot(MO_offense_time, aes(x=Year, y=number)) +
   scale_x_continuous(breaks = seq(1955, 2020, 5)) +
   theme_linedraw()
 ```
-![](images/line_graph.png)
-Notably, it seems that around 2006-2007, the offenses commited each year started to drop at a remarkable rate. Fore more recent cases, it's understandable that some offenders may have not been convicted, hence the smaller number. Arguably this time period also coincided with the aforementioned SORNA's heightened efforts to expand the registry, "strengthening federal penalties for crimes against children and forms new regional Internet Crimes Against Children Taskforces".
+
+
+Notably, it seems that around 2006-2007, the offenses committed each year started to drop at a remarkable rate. For more recent cases, it's understandable that some offenders may not have been convicted, hence the smaller number. Arguably this time period also coincided with the aforementioned SORNA's heightened efforts to expand the registry, "strengthening federal penalties for crimes against children and forms new regional Internet Crimes Against Children Taskforces."
 
 # Mapping the Offenders
-Since every offender may be convicted of multiple offenses of the same type on the same day, we may ask where are the offenders per se. I thought it might be interesting looking at te number of offenders versus population, which may shed some light on sex offense crime rate. We can delineate the different steps in it. 
+Since every offender may be convicted of multiple offenses of the same type on the same day, we may ask where are the offenders per se. I thought it might be interesting looking at the number of offenders versus population, which may shed some light on the sex offense crime rate. We can delineate the different steps in it. 
 
-## Prepping the MO_offender data for joining the census data
-First off, despite the name, the same offender with the same address could still be listed multiple times. Thus it needs to be grouped by *`Name`* before being grouped by *`County`* to avoid duplicate names. 
+## Preparing the MO_offender data for joining the census data
+First off, the same offender with the same address could still be listed multiple times. Thus it needs to be grouped by *`Name`* before being grouped by *`County`* to avoid duplicate names. 
 ```{r}
 MO_offender <- read_xlsx("msor/msor.xlsx", skip = 13)
 MO_offender_unique <- MO_offender %>% 
@@ -112,7 +113,7 @@ MO_offender_unique <- MO_offender %>%
 
 ## Loading the shapefiles and census data
 Using `library(tidycensus)`, we can obtain the county shapefile of the Missouri state and the census data of each county. 
-`B0001_001E` is the Census variable name for total estimated population.
+`B0001_001E` is the Census variable name for the total estimated population.
 ```{r key, eval=F}
 census_api_key("YOUR API KEY GOES HERE")
 ```
@@ -139,7 +140,7 @@ MO <- left_join(MO, MO_offender_county,
                           by=c("NAME"="county_name"))
 ```
 
-## Calculating percent of Offenders against Population
+## Calculating the Percent of Offenders against Population
 ```{r}
 MO <- MO %>% mutate(offender_percent = round((off_per_county/estimate) *100, 2 ))
 ```
@@ -155,13 +156,6 @@ ggplot() +
   theme_void() +
   theme(panel.grid.major = element_line(colour = 'transparent'))
 ```
-![](images/MO_map.png)
-Voilà! However, there's still blank spaces for some states. For data of this granulality, it seems an interactive map could do much more with the tooltips showing the county names, population and key data. 
 
-This project is part of the mass online class "R for Journalists" taught by the wonderful Washington Post Investigative and Data reporter Andrew Tran.
+Voilà! However, there're still blank spaces for some states. For data of this granularity, it seems an interactive map could do much more with the tooltips showing the county names, population and key data. 
 
-The idea of slope-chart to showcase correlation is inspired by another MOOC instructor, Alberto Cairo. It does come to me that in one class section, Andrew visualized the age of actress vs. actors using a lollipop chart, which is also very intuitive (it might work better for a small dataset?) 
-
-There's still definitely room for improvement. I am personally very intenrested in facet-mapping the trend overtime per county. I thought of developing a Missouri geofacet() function so that it looks more fun next time I am working on any Missouri map-related Graphic.
-
-Further exploration of this dataset will be updated. 
