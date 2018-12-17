@@ -40,7 +40,7 @@ library(viridis)
 # X11.options(type = "cairo")
 ```
 
-## Read the data table
+## Read the Data Table
 The downloadable datasets from the Registry include multiple items. According to the [fact sheet](http://www.mshp.dps.missouri.gov/MSHPWeb/PatrolDivisions/CRID/SOR/factsheet.html),name, alias names, date of birth, alias dates of birth, physical description, all addresses, offense, vehicle information, pictures of registered sex offenders and offense dates were available on the website. We used the two datasets *`msor.xlsx`*, which is a database of offenders, as well as *`msir_offense`*, which includes more details about individual sex offense cases.
 
 ```{r pressure, echo=T}
@@ -76,7 +76,7 @@ p + geom_segment(data=MO_offense_minor,  aes(x=0,xend=15,y=Off.Age,yend=Victim.A
 
 It shows that offenses against minors constitute about 10% of total offenses, while the offenders' ages vary. 
 
-## Tracking the number of sexual offenses
+## Tracking the Number of Sexual Offenses
 the `str_sub()` function can help extract the year from the Offense.Date.
 ```{r}
 MO_offense <- MO_offense %>%  
@@ -125,7 +125,7 @@ census_api_key(census_key)
 ```{r, message=F, quietly=T, echo=T, results='hide'}
 MO <- get_acs(geography="county", year=2016, variables = "B00001_001E",state="MO", geometry=T)
 ```
-## Joining Data
+## Joining data
 Currently there's not a common field in the two dataset to be joined by. I decided to create a new column in the `MO_offender_county` dataset. 
 ```{r}
 MO_offender_county <- MO_offender_unique %>% 
@@ -140,7 +140,7 @@ MO <- left_join(MO, MO_offender_county,
                           by=c("NAME"="county_name"))
 ```
 
-## Calculating the Percent of Offenders against Population
+## Calculating the percent of offenders against population
 ```{r}
 MO <- MO %>% mutate(offender_percent = round((off_per_county/estimate) *100, 2 ))
 ```
